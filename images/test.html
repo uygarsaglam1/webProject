@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Bento Grid - Scroll Animation</title>
+    <style>
+        /* --- Temel Sıfırlamalar ve Arka Plan --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            min-height: 150vh; /* Kaydırma efektini görebilmek için ekstra alan */
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- Grid Konteyner --- */
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* --- Başlık Alanı --- */
+        .header-block {
+            padding: 20px 10px;
+        }
+
+        .header-block span {
+            color: #777;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .header-block h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        /* --- Kart Yapısı --- */
+        .card {
+            background-color: #1e1e1e;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            
+            /* Animasyon için Başlangıç Durumu */
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        /* Kart Ekrana Girdiğinde Tetiklenecek Class */
+        .card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Kart İçerik Elemanları --- */
+        .card-image {
+            width: 100%;
+            height: 260px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Görseldeki soyut renk geçişleri için placeholder gradyanlar */
+        .img-1 { background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9); }
+        .img-2 { background: linear-gradient(135deg, #ff9800, #9c27b0, #00bcd4); }
+        .img-3 { background: linear-gradient(135deg, #ffab91, #b2dfdb, #4db6ac); }
+        .img-4 { background: linear-gradient(45deg, #ff3d00, #ffea00, #ff3d00); }
+
+        .card-content {
+            padding: 30px;
+        }
+
+        .card-content p {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .card-content a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-bottom: 2px solid #ffffff;
+            padding-bottom: 4px;
+            transition: opacity 0.2s;
+        }
+
+        .card-content a:hover {
+            opacity: 0.7;
+        }
+
+        /* --- Responsive Tasarım (Mobil Uyumluluk) --- */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr; /* Mobilde tek sütun */
+                gap: 20px;
+            }
+            
+            .header-block {
+                order: -1; /* Mobilde başlığın en üstte kalmasını sağlar */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="card">
+            <div class="card-image img-1"></div>
+            <div class="card-content">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.</p>
+                <a href="#">Read more</a>
+            </div>
+        </div>
+
+        <div class="header-block">
+            <span>What we don't know</span>
+            <h1>There is a lot we don't know. Here is a small sneak peek</h1>
+        </div>
+
+        <div class="card">
+            <div class="card-image img-2"></div>
+            <div class="card-content">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.</p>
+                <a href="#">Read more</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-image img-3"></div>
+            <div class="card-content">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.</p>
+                <a href="#">Read more</a>
+            </div>
+        </div>
+
+        <div></div> <div class="card">
+            <div class="card-image img-4"></div>
+            <div class="card-content">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.</p>
+                <a href="#">Read more</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll('.card');
+
+            const observerOptions = {
+                root: null, // Tarayıcı pencerisini baz alır
+                rootMargin: '0px',
+                threshold: 0.1 // Kartın %10'u ekrana girdiğinde tetiklenir
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Kart ekrana girdiğinde (Aşağı inerken)
+                        entry.target.classList.add('show');
+                    } else {
+                        // Kart ekrandan çıktığında (Yukarı çıkarken)
+                        entry.target.classList.remove('show');
+                    }
+                });
+            }, observerOptions);
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
